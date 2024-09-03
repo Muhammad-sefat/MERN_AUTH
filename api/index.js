@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import routerUser from "./routes/user.routes.js";
+import authRouter from "./routes/auth.user.js";
 dotenv.config();
 
 mongoose
@@ -15,8 +16,11 @@ mongoose
 
 const app = express();
 
+app.use(express.json());
+
 app.listen(3000, () => {
   console.log("Server is runing from 3000 !");
 });
 
 app.use("/api/user", routerUser);
+app.use("/api/auth", authRouter);
