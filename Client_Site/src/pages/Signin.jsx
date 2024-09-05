@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  signInFailure,
+  signInStart,
+  signInSuccess,
+} from "../redux/user/UserSlice";
 
 const Signin = () => {
   const [formData, setFormData] = useState({
@@ -8,8 +14,9 @@ const Signin = () => {
     email: "",
     password: "",
   });
-  const [loading, setLoading] = useState(false);
+  const { loading } = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -19,7 +26,7 @@ const Signin = () => {
     e.preventDefault();
 
     try {
-      setLoading(true);
+      dispatch(signInStart());
       const res = await fetch("/api/auth/signin", {
         method: "POST",
         headers: {
@@ -29,7 +36,7 @@ const Signin = () => {
       });
 
       const data = await res.json();
-      setLoading(false);
+      dispatch(signInSuccess(data));
       if (!res.ok) {
         toast.error(data.message);
         return;
@@ -37,7 +44,7 @@ const Signin = () => {
       toast.success(data.message);
       navigate("/");
     } catch (error) {
-      setLoading(false);
+      dispatch(signInFailure(error));
       console.error("Signup error:", error);
     }
   };
