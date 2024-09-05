@@ -1,35 +1,86 @@
-import React from "react";
+import React, { useState } from "react";
+import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 
 const Signup = () => {
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      setLoading(true);
+      setError(false);
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+      setLoading(false);
+      if (!res.ok) {
+        toast.error(data.message);
+        setError(true);
+        return;
+      }
+      toast.success(data.message);
+    } catch (error) {
+      setLoading(false);
+      setError(true);
+      console.error("Signup error:", error);
+    }
+  };
+
   return (
     <div className="max-w-lg mx-auto p-4">
       <h1 className="text-4xl font-semibold text-center my-6">Sign Up</h1>
-      <form className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <input
           className="p-3 rounded-lg bg-slate-300"
           type="text"
           placeholder="Username"
-          id="usernsme"
+          id="username"
+          onChange={handleChange}
+          value={formData.username}
         />
         <input
           className="p-3 rounded-lg bg-slate-300"
           type="email"
           placeholder="Email"
           id="email"
+          onChange={handleChange}
+          value={formData.email}
         />
         <input
           className="p-3 rounded-lg bg-slate-300"
           type="password"
           placeholder="Password"
           id="password"
+          onChange={handleChange}
+          value={formData.password}
         />
-        <button className="p-3 bg-slate-700 text-white font-semibold uppercase rounded-lg hover:opacity-95">
-          Sign Up
+        <button
+          className="p-3 bg-slate-700 text-white font-semibold uppercase rounded-lg hover:opacity-95"
+          disabled={loading}
+        >
+          {loading ? "Signing Up..." : "Sign Up"}
         </button>
       </form>
       <div className="flex gap-2 mt-5 font-medium">
-        <p>Have an account ?</p>
+        <p>Have an account?</p>
         <Link to="/sign-in">
           <span className="text-blue-500">Sign In</span>
         </Link>
