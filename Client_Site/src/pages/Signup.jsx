@@ -8,7 +8,6 @@ const Signup = () => {
     email: "",
     password: "",
   });
-  const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -20,7 +19,6 @@ const Signup = () => {
 
     try {
       setLoading(true);
-      setError(false);
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: {
@@ -33,13 +31,11 @@ const Signup = () => {
       setLoading(false);
       if (!res.ok) {
         toast.error(data.message);
-        setError(true);
         return;
       }
       toast.success(data.message);
     } catch (error) {
       setLoading(false);
-      setError(true);
       console.error("Signup error:", error);
     }
   };
