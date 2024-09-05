@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -9,6 +9,7 @@ const Signup = () => {
     password: "",
   });
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -34,6 +35,7 @@ const Signup = () => {
         return;
       }
       toast.success(data.message);
+      navigate("/");
     } catch (error) {
       setLoading(false);
       console.error("Signup error:", error);
